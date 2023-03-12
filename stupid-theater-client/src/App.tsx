@@ -1,11 +1,8 @@
-import type { Component } from 'solid-js';
+import { Component } from 'solid-js';
+import { HomePage } from './HomePage';
 
 const App: Component = () => {
-  return (
-    <div>
-      <h1 class="text-3xl font-bold underline">Hello</h1>
-    </div>
-  );
+  return <HomePage></HomePage>;
 };
 
 export default App;
