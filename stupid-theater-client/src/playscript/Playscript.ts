@@ -3,17 +3,17 @@ type PlayscriptCharacterLine = {
   line: string;
 };
 
-type PlayscriptCharacterLines = {
+export type PlayscriptCharacterEvent = {
   type: 'character';
   lines: PlayscriptCharacterLine[];
 };
 
-type PlayscriptNarratorLine = {
+export type PlayscriptNarratorEvent = {
   type: 'narrator';
   line: string;
 };
 
-export type PlayscriptEvent = PlayscriptNarratorLine | PlayscriptCharacterLines;
+export type PlayscriptEvent = PlayscriptNarratorEvent | PlayscriptCharacterEvent;
 
 export type Playscript = {
   name: string;
