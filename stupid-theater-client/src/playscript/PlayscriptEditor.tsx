@@ -51,7 +51,7 @@ const CharacterEventRow: Component<{
     <div class="flex flex-row">
       <For each={props.characters}>
         {(character) => (
-          <div class="grow basis-0 p-4 border-2 border-slate-600">
+          <div class="grow basis-0 p-4 pb-6 border-2 border-slate-600">
             <TextInput
               value={props.event.lines.find((line) => line.character === character)?.line ?? ''}
               onChange={(value) => handleLineChange(character, value)}
@@ -73,7 +73,7 @@ const NarratorEventRow: Component<{
   };
 
   return (
-    <div class="p-4 border-2 border-slate-600">
+    <div class="p-4 pb-6 border-2 border-slate-600">
       <TextInput value={props.event.line} onChange={handleTextChange}></TextInput>
     </div>
   );
@@ -83,18 +83,30 @@ const EventRow: Component<{
   event: PlayscriptEvent;
   characters: string[];
   onChange?: (event: PlayscriptEvent) => void;
+  onNewNarratorLine?: () => void;
+  onNewCharacterLine?: () => void;
 }> = (props) => {
   return (
-    <div>
-      {props.event.type === 'character' ? (
-        <CharacterEventRow
-          event={props.event}
-          characters={props.characters}
-          onChange={props.onChange}
-        ></CharacterEventRow>
-      ) : (
-        <NarratorEventRow event={props.event} onChange={props.onChange}></NarratorEventRow>
-      )}
+    <div class="relative">
+      <div>
+        {props.event.type === 'character' ? (
+          <CharacterEventRow
+            event={props.event}
+            characters={props.characters}
+            onChange={props.onChange}
+          ></CharacterEventRow>
+        ) : (
+          <NarratorEventRow event={props.event} onChange={props.onChange}></NarratorEventRow>
+        )}
+      </div>
+      <div class="absolute right-4 bottom-0 translate-y-1/2 z-10 flex flex-row gap-4">
+        <button class="bg-slate-900 px-4 py-1 rounded-2xl uppercase text-sm" onClick={props.onNewNarratorLine}>
+          New narrator line
+        </button>
+        <button class="bg-slate-900 px-4 py-1 rounded-2xl uppercase text-sm" onClick={props.onNewCharacterLine}>
+          New character line
+        </button>
+      </div>
     </div>
   );
 };
@@ -132,8 +144,25 @@ export const PlayscriptEditor: Component = () => {
     },
   ]);
 
-  const addEvent = () => {
-    setEvents((events) => [...events, { id: crypto.randomUUID(), type: 'narrator', line: 'lil' }]);
+  const handleNewNarratorLine = (index: number) => {
+    const newEvents = [...events()];
+    newEvents.splice(index + 1, 0, { id: crypto.randomUUID(), type: 'narrator', line: '' });
+    setEvents(newEvents);
+  };
+
+  const handleNewCharacterLine = (index: number) => {
+    const newEvents = [...events()];
+    newEvents.splice(index + 1, 0, {
+      id: crypto.randomUUID(),
+      type: 'character',
+      lines: [
+        { character: 'Character 1', line: '' },
+        { character: 'Character 2', line: '' },
+        { character: 'Character 3', line: '' },
+        { character: 'Character 4', line: '' },
+      ],
+    });
+    setEvents(newEvents);
   };
 
   const handleEventChange = (event: PlayscriptEvent) => {
@@ -169,15 +198,18 @@ export const PlayscriptEditor: Component = () => {
         </For>
       </div>
 
-      <div class="grow">
+      <div class="grow overflow-auto">
         <Index each={events()}>
-          {(event) => <EventRow event={event()} characters={characters()} onChange={handleEventChange}></EventRow>}
+          {(event, index) => (
+            <EventRow
+              event={event()}
+              characters={characters()}
+              onChange={handleEventChange}
+              onNewNarratorLine={() => handleNewNarratorLine(index)}
+              onNewCharacterLine={() => handleNewCharacterLine(index)}
+            ></EventRow>
+          )}
         </Index>
-      </div>
-
-      <div class="h-20 bg-slate-900 flex flex-row items-center justify-center gap-8">
-        <Button label="Add character line"></Button>
-        <Button label="Add narrator line" onClick={addEvent}></Button>
       </div>
     </div>
   );
