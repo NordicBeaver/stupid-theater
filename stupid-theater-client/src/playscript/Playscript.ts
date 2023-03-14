@@ -4,11 +4,13 @@ type PlayscriptCharacterLine = {
 };
 
 export type PlayscriptCharacterEvent = {
+  id: string;
   type: 'character';
   lines: PlayscriptCharacterLine[];
 };
 
 export type PlayscriptNarratorEvent = {
+  id: string;
   type: 'narrator';
   line: string;
 };
