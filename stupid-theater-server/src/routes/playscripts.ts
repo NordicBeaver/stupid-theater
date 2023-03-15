@@ -16,8 +16,15 @@ interface DeletePlayscriptDto {
 
 export const playscriptsRouter: FastifyPluginCallback = (server, opts, done) => {
   server.get('/', async (requiest, response) => {
-    const playsripts = await prisma.playscript.findMany();
-    return { playscripts: playsripts };
+    const playscripts = await prisma.playscript.findMany();
+    return { playscripts: playscripts };
+  });
+
+  server.get('/:id', async (request, response) => {
+    const params = request.params as { id: string };
+    const id = params.id;
+    const playscript = await prisma.playscript.findFirst({ where: { id: id } });
+    return { playscript: playscript };
   });
 
   server.post('/create', async (request, response) => {
