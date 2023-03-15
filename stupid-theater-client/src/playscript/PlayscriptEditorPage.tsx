@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import { PlayscriptEditor } from './PlayscriptEditor';
+import { PlayscriptEditor } from './playscriptEditor/PlayscriptEditor';
 
 export const PlayscriptEditorPage: Component = () => {
   return (
