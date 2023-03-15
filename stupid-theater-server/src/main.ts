@@ -1,9 +1,12 @@
+import { PrismaClient } from '@prisma/client';
 import fastify from 'fastify';
 
 const server = fastify({ logger: true });
+const prisma = new PrismaClient();
 
-server.get('/', async (requiest, response) => {
-  return { hello: 'H!' };
+server.get('/playscripts', async (requiest, response) => {
+  const playsripts = await prisma.playscript.findMany();
+  return { playsripts: playsripts };
 });
 
 const start = async () => {
