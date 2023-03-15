@@ -1,10 +1,16 @@
-import { Component } from 'solid-js';
-import { PlayscriptEditor } from './PlayscriptEditor';
+import { useParams, useRouteData } from '@solidjs/router';
+import { Component, createResource } from 'solid-js';
+import { findPlayscript } from '../api';
+import { Page } from '../ui/Page';
 
 export const PlayscriptPage: Component = () => {
+  const params = useParams<{ id: string }>();
+
+  const [playscript] = createResource(() => findPlayscript(params.id));
+
   return (
-    <div class="h-screen w-screen bg-gray-800 flex flex-col justify-center items-center gap-4">
-      <PlayscriptEditor></PlayscriptEditor>
-    </div>
+    <Page>
+      <h1>{playscript()?.name}</h1>
+    </Page>
   );
 };
