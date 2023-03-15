@@ -18,6 +18,7 @@ model Playscript {
 
 model Character {
   id           String     @id @default(cuid())
+  order        Int
   name         String
   description  String
   playscript   Playscript @relation(fields: [playscriptId], references: [id])

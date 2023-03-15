@@ -33,10 +33,10 @@ export const playscriptsRouter: FastifyPluginCallback = (server, opts, done) => 
     const createdPlayscript = await prisma.playscript.create({ data: { name: dto.name } });
     await prisma.character.createMany({
       data: [
-        { playscriptId: createdPlayscript.id, name: 'Character 1', description: 'Characted description' },
-        { playscriptId: createdPlayscript.id, name: 'Character 2', description: 'Characted description' },
-        { playscriptId: createdPlayscript.id, name: 'Character 3', description: 'Characted description' },
-        { playscriptId: createdPlayscript.id, name: 'Character 4', description: 'Characted description' },
+        { playscriptId: createdPlayscript.id, order: 0, name: 'Character 1', description: 'Characted description' },
+        { playscriptId: createdPlayscript.id, order: 1, name: 'Character 2', description: 'Characted description' },
+        { playscriptId: createdPlayscript.id, order: 2, name: 'Character 3', description: 'Characted description' },
+        { playscriptId: createdPlayscript.id, order: 3, name: 'Character 4', description: 'Characted description' },
       ],
     });
 

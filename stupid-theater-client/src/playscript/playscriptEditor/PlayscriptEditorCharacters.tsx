@@ -1,6 +1,7 @@
 import { Component, For } from 'solid-js';
 import { PlayscriptCharacter } from '../../api';
 import { TextInput } from './TextInput';
+import { orderBy } from 'lodash';
 
 export const PlayscriptEditorCharacters: Component<{
   characters: PlayscriptCharacter[];
@@ -17,7 +18,7 @@ export const PlayscriptEditorCharacters: Component<{
 
   return (
     <div class="w-full flex flex-row">
-      <For each={props.characters}>
+      <For each={orderBy(props.characters, (c) => c.order)}>
         {(character) => (
           <div class="h-full basis-0 grow flex flex-col">
             <div class="p-4">
