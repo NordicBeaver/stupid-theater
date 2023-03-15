@@ -11,6 +11,15 @@ datasource db {
 }
 
 model Playscript {
-  id   String @id @default(cuid())
-  name String
+  id         String      @id @default(cuid())
+  name       String
+  characters Character[]
+}
+
+model Character {
+  id           String     @id @default(cuid())
+  name         String
+  description  String
+  playscript   Playscript @relation(fields: [playscriptId], references: [id])
+  playscriptId String
 }
