@@ -1,13 +1,9 @@
-import { PrismaClient } from '@prisma/client';
 import fastify from 'fastify';
+import { playscriptsRouter } from './routes/playscripts';
 
 const server = fastify({ logger: true });
-const prisma = new PrismaClient();
 
-server.get('/playscripts', async (requiest, response) => {
-  const playsripts = await prisma.playscript.findMany();
-  return { playsripts: playsripts };
-});
+server.register(playscriptsRouter, { prefix: '/playscripts' });
 
 const start = async () => {
   try {
