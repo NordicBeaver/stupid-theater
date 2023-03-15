@@ -1,7 +1,10 @@
+import fastifyCors from '@fastify/cors';
 import fastify from 'fastify';
 import { playscriptsRouter } from './routes/playscripts';
 
 const server = fastify({ logger: true });
+
+server.register(fastifyCors);
 
 server.register(playscriptsRouter, { prefix: '/playscripts' });
 
