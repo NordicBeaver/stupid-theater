@@ -1,8 +1,9 @@
 import { useParams } from '@solidjs/router';
 import { Component, createResource, createSignal, For, Index, Show } from 'solid-js';
-import { findPlayscript, updatePlayscript } from '../../api';
+import { findPlayscript, Playscript, PlayscriptCharacter, updateCharacter, updatePlayscript } from '../../api';
 import { PlayscriptEvent } from '../Playscript';
 import { EventRow } from './EventRow';
+import { PlayscriptEditorCharacters } from './PlayscriptEditorCharacters';
 
 export const PlayscriptEditor: Component = () => {
   const [characters, setCharacters] = createSignal<string[]>([
@@ -41,9 +42,26 @@ export const PlayscriptEditor: Component = () => {
   const [playscript, { mutate: mutatePlayscript }] = createResource(() => findPlayscript(params.id));
 
   const handlePlayscriptNameChange = async (newName: string) => {
-    const response = await updatePlayscript({ id: params.id, name: newName });
-    const updatedPlayscript = response.playscript;
+    const updatedPlayscript = await updatePlayscript({ id: params.id, name: newName });
     mutatePlayscript(updatedPlayscript);
+  };
+
+  const handleCharacterChange = async (newCharacter: PlayscriptCharacter) => {
+    const updatedCharacter = await updateCharacter({
+      id: newCharacter.id,
+      name: newCharacter.name,
+      description: newCharacter.description,
+    });
+    mutatePlayscript((oldPlayscript) => {
+      if (!oldPlayscript) {
+        return oldPlayscript;
+      }
+      const newCharacters = oldPlayscript.characters.map((character) =>
+        character.id === updatedCharacter.id ? updatedCharacter : character
+      );
+      const newPlayscript: Playscript = { ...oldPlayscript, characters: newCharacters };
+      return newPlayscript;
+    });
   };
 
   const handleNewNarratorLine = (index: number) => {
@@ -83,6 +101,7 @@ export const PlayscriptEditor: Component = () => {
     <div class="h-full w-full flex flex-col">
       {(() => {
         const currentPlayscript = playscript();
+        console.log(currentPlayscript);
         if (currentPlayscript == undefined) {
           return <div>Loading</div>;
         }
@@ -98,13 +117,10 @@ export const PlayscriptEditor: Component = () => {
             </div>
 
             <div class="flex flex-row border-b-4 border-b-slate-600">
-              <For each={characters()}>
-                {(character) => (
-                  <div class="h-full basis-0 grow flex flex-col">
-                    <div class="p-4">{character}</div>
-                  </div>
-                )}
-              </For>
+              <PlayscriptEditorCharacters
+                characters={currentPlayscript.characters}
+                onChange={handleCharacterChange}
+              ></PlayscriptEditorCharacters>
             </div>
 
             <div class="grow overflow-auto">

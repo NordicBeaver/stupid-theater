@@ -16,4 +16,6 @@ export const charactersRouter: FastifyPluginCallback = (server, opts, done) => {
     });
     return { character: character };
   });
+
+  done();
 };
