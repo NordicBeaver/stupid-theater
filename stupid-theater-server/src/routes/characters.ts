@@ -4,7 +4,7 @@ import { prisma } from '../prisma';
 interface UpdateCharacterRequest {
   id: string;
   name?: string;
-  descripton?: string;
+  description?: string;
 }
 
 export const charactersRouter: FastifyPluginCallback = (server, opts, done) => {
@@ -12,7 +12,7 @@ export const charactersRouter: FastifyPluginCallback = (server, opts, done) => {
     const requestData = request.body as UpdateCharacterRequest;
     const character = await prisma.character.update({
       where: { id: requestData.id },
-      data: { name: requestData.name, description: requestData.descripton },
+      data: { name: requestData.name, description: requestData.description },
     });
     return { character: character };
   });
