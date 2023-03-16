@@ -16,13 +16,33 @@ export const PlayscriptEditorCharacters: Component<{
     props.onChange?.(newCharacter);
   };
 
+  const handleDescriptionChange = (id: string, newDescription: string) => {
+    const character = props.characters.find((character) => character.id === id);
+    if (!character) {
+      return;
+    }
+    const newCharacter: PlayscriptCharacter = { ...character, description: newDescription };
+    props.onChange?.(newCharacter);
+  };
+
   return (
     <div class="w-full flex flex-row">
       <For each={orderBy(props.characters, (c) => c.order)}>
         {(character) => (
           <div class="h-full basis-0 grow flex flex-col">
-            <div class="p-4">
-              <TextInput value={character.name} onChange={(value) => handleNameChange(character.id, value)}></TextInput>
+            <div class="p-4 flex flex-col gap-2">
+              <div>
+                <TextInput
+                  value={character.name}
+                  onChange={(value) => handleNameChange(character.id, value)}
+                ></TextInput>
+              </div>
+              <div>
+                <TextInput
+                  value={character.description}
+                  onChange={(value) => handleDescriptionChange(character.id, value)}
+                ></TextInput>
+              </div>
             </div>
           </div>
         )}
