@@ -29,6 +29,14 @@ interface UpdateCharacterEventDto {
   }[];
 }
 
+interface DeleteNarratorEventDto {
+  id: string;
+}
+
+interface DeleteCharacterEventDto {
+  id: string;
+}
+
 export const playscriptEventsRouter: FastifyPluginCallback = (server, opts, done) => {
   server.get('/', async (request, response) => {
     const { playscriptId } = request.query as { playscriptId: string };
@@ -119,6 +127,18 @@ export const playscriptEventsRouter: FastifyPluginCallback = (server, opts, done
     });
 
     return { event: updatedEvent };
+  });
+
+  server.post('/deleteNarratorEvent', async (request, response) => {
+    const dto = request.body as DeleteNarratorEventDto;
+    await prisma.playscriptNarratorEvent.delete({ where: { id: dto.id } });
+    return { id: dto.id };
+  });
+
+  server.post('/deleteCharacterEvent', async (request, response) => {
+    const dto = request.body as DeleteCharacterEventDto;
+    await prisma.playscriptCharacterEvent.delete({ where: { id: dto.id } });
+    return { id: dto.id };
   });
 
   done();

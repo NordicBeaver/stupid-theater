@@ -46,7 +46,7 @@ model PlayscriptCharacterEvent {
 
 model PlayscriptCharacterLine {
   id                         String                   @id @default(cuid())
-  event                      PlayscriptCharacterEvent @relation(fields: [playscriptCharacterEventId], references: [id])
+  event                      PlayscriptCharacterEvent @relation(fields: [playscriptCharacterEventId], references: [id], onDelete: Cascade)
   playscriptCharacterEventId String
   character                  Character                @relation(fields: [characterId], references: [id])
   characterId                String

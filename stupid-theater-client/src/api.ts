@@ -231,3 +231,19 @@ export async function updateCharacterEvent(data: UpdateCharacterEventRequest) {
 
   return event;
 }
+
+interface DeleteNarratorEventRequest {
+  id: string;
+}
+
+export async function deleteNarratorEvent(data: DeleteNarratorEventRequest) {
+  await client.post<DeleteNarratorEventRequest>('/playscript/events/deleteNarratorEvent', data);
+}
+
+interface DeleteCharacterEventRequest {
+  id: string;
+}
+
+export async function deleteCharacterEvent(data: DeleteCharacterEventRequest) {
+  await client.post<DeleteCharacterEventRequest>('/playscript/events/deleteCharacterEvent', data);
+}

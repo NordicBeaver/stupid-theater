@@ -5,6 +5,8 @@ import { createStore, reconcile, unwrap } from 'solid-js/store';
 import {
   createCharacterEvent,
   createNarratorEvent,
+  deleteCharacterEvent,
+  deleteNarratorEvent,
   findPlayscript,
   getEvents,
   Playscript,
@@ -136,6 +138,16 @@ export const PlayscriptEditor: Component = () => {
     }
   };
 
+  const handleEventDelete = async (event: PlayscriptEvent) => {
+    if (event.type === 'narrator') {
+      await deleteNarratorEvent({ id: event.id });
+    } else if ((event.type = 'character')) {
+      await deleteCharacterEvent({ id: event.id });
+    }
+
+    mutateEvents((oldEvents) => oldEvents?.filter((e) => e.id !== event.id));
+  };
+
   return (
     <div class="h-full w-full flex flex-col">
       {(() => {
@@ -176,6 +188,7 @@ export const PlayscriptEditor: Component = () => {
                           event={event()}
                           characters={currentPlayscript.characters}
                           onChange={handleEventChange}
+                          onDelete={() => handleEventDelete(event())}
                         ></EventRow>
                       </>
                     )}

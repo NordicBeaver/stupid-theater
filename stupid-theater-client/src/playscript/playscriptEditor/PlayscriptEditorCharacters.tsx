@@ -47,6 +47,8 @@ export const PlayscriptEditorCharacters: Component<{
           </div>
         )}
       </For>
+      {/* A spacer for the 'buttons' column */}
+      <div class="w-16"></div>
     </div>
   );
 };
