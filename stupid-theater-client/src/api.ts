@@ -1,7 +1,7 @@
-import axios, { Axios, AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { PlayscriptCharacterEvent, PlayscriptEvent, PlayscriptNarratorEvent } from './playscript/Playscript';
 
-const client = axios.create({ baseURL: 'http://localhost:3001/' });
+const client = axios.create({ baseURL: import.meta.env.VITE_API_URL });
 
 export interface Playscript {
   id: string;
