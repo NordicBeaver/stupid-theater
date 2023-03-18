@@ -36,6 +36,23 @@ export async function findPlayscript(id: string) {
   return playscript;
 }
 
+interface CreatePlayscriptRequest {
+  name: string;
+}
+
+interface CreatePlayscriptResponse {
+  playscript: Playscript;
+}
+
+export async function createPlayscript(data: CreatePlayscriptRequest) {
+  const response = await client.post<CreatePlayscriptRequest, AxiosResponse<CreatePlayscriptResponse>>(
+    'playscripts/create',
+    data
+  );
+  const playscript = response.data.playscript;
+  return playscript;
+}
+
 interface UpdatePlayscriptRequest {
   id: string;
   name: string;

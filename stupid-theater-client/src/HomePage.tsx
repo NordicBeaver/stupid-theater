@@ -1,9 +1,17 @@
-import { A } from '@solidjs/router';
-import { Component, createEffect, createResource, For } from 'solid-js';
-import { listPlayscripts } from './api';
+import { A, useNavigate } from '@solidjs/router';
+import { Component, createResource, For } from 'solid-js';
+import { createPlayscript, listPlayscripts } from './api';
+import { Button } from './ui/Button';
 
 export const HomePage: Component = () => {
   const [playscripts] = createResource(listPlayscripts);
+
+  const navigate = useNavigate();
+
+  const handleCreateNewButtonClick = async () => {
+    const playscript = await createPlayscript({ name: 'New playscript' });
+    navigate(`/playscript/${playscript.id}`);
+  };
 
   return (
     <div class="h-screen w-screen bg-gray-800 flex flex-col justify-center items-center gap-4">
@@ -17,9 +25,7 @@ export const HomePage: Component = () => {
           )}
         </For>
       </ul>
-      <A href="/playscript" class="font-bold border-2 px-3 py-2 uppercase">
-        Create new play
-      </A>
+      <Button label="Create new play" onClick={handleCreateNewButtonClick}></Button>
     </div>
   );
 };
