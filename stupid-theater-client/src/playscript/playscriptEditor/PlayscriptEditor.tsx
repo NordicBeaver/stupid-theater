@@ -1,45 +1,28 @@
 import { useParams } from '@solidjs/router';
+import { orderBy } from 'lodash';
 import { Component, createResource, createSignal, For, Index, Show } from 'solid-js';
-import { findPlayscript, Playscript, PlayscriptCharacter, updateCharacter, updatePlayscript } from '../../api';
+import {
+  createCharacterEvent,
+  createNarratorEvent,
+  findPlayscript,
+  getEvents,
+  Playscript,
+  PlayscriptCharacter,
+  updateCharacter,
+  updateCharacterEvent,
+  updateNarratorEvent,
+  updatePlayscript,
+} from '../../api';
 import { PlayscriptEvent } from '../Playscript';
 import { EventRow } from './EventRow';
+import { EventRowButtons } from './EventRowButtons';
 import { PlayscriptEditorCharacters } from './PlayscriptEditorCharacters';
 
 export const PlayscriptEditor: Component = () => {
-  const [characters, setCharacters] = createSignal<string[]>([
-    'Character 1',
-    'Character 2',
-    'Character 3',
-    'Character 4',
-  ]);
-  // TODO: turn into store?
-  const [events, setEvents] = createSignal<PlayscriptEvent[]>([
-    { id: crypto.randomUUID(), type: 'narrator', line: 'The story begins' },
-    {
-      id: crypto.randomUUID(),
-      type: 'character',
-      lines: [
-        { character: 'Character 1', line: '- Hello everyone' },
-        { character: 'Character 2', line: '' },
-        { character: 'Character 3', line: '' },
-        { character: 'Character 4', line: '' },
-      ],
-    },
-    {
-      id: crypto.randomUUID(),
-      type: 'character',
-      lines: [
-        { character: 'Character 1', line: '' },
-        { character: 'Character 2', line: '- Hi' },
-        { character: 'Character 3', line: '- Hello' },
-        { character: 'Character 4', line: "- I'm stupid" },
-      ],
-    },
-  ]);
-
   const params = useParams<{ id: string }>();
 
   const [playscript, { mutate: mutatePlayscript }] = createResource(() => findPlayscript(params.id));
+  const [events, { mutate: mutateEvents }] = createResource(() => getEvents(params.id));
 
   const handlePlayscriptNameChange = async (newName: string) => {
     const updatedPlayscript = await updatePlayscript({ id: params.id, name: newName });
@@ -64,37 +47,73 @@ export const PlayscriptEditor: Component = () => {
     });
   };
 
-  const handleNewNarratorLine = (index: number) => {
-    const newEvents = [...events()];
-    newEvents.splice(index + 1, 0, { id: crypto.randomUUID(), type: 'narrator', line: '' });
-    setEvents(newEvents);
-  };
-
-  const handleNewCharacterLine = (index: number) => {
-    const newEvents = [...events()];
-    newEvents.splice(index + 1, 0, {
-      id: crypto.randomUUID(),
-      type: 'character',
-      lines: [
-        { character: 'Character 1', line: '' },
-        { character: 'Character 2', line: '' },
-        { character: 'Character 3', line: '' },
-        { character: 'Character 4', line: '' },
-      ],
+  const handleNewNarratorLine = async (index: number) => {
+    const event = await createNarratorEvent({ playscriptId: params.id, index: index, line: '' });
+    mutateEvents((oldEvents) => {
+      if (!oldEvents) {
+        return;
+      }
+      const eventsWithNewIndices = oldEvents.map((oldEvent) =>
+        oldEvent.index >= event.index ? ({ ...oldEvent, index: oldEvent.index + 1 } as PlayscriptEvent) : oldEvent
+      );
+      const newEvents = [...eventsWithNewIndices, event];
+      console.log('Events updated', newEvents);
+      return newEvents;
     });
-    setEvents(newEvents);
   };
 
-  const handleEventChange = (event: PlayscriptEvent) => {
-    setEvents((events) =>
-      events.map((e) => {
-        if (e.id === event.id) {
-          return event;
-        } else {
-          return e;
+  const handleNewCharacterLine = async (index: number) => {
+    const currentPlayscript = playscript();
+    if (!currentPlayscript) {
+      return;
+    }
+
+    const event = await createCharacterEvent({
+      playscriptId: params.id,
+      index: index,
+      lines: currentPlayscript.characters.map((c) => ({ charactedId: c.id, line: '' })),
+    });
+
+    mutateEvents((oldEvents) => {
+      if (!oldEvents) {
+        return;
+      }
+      const eventsWithNewIndices = oldEvents.map((oldEvent) =>
+        oldEvent.index >= event.index ? ({ ...oldEvent, index: oldEvent.index + 1 } as PlayscriptEvent) : oldEvent
+      );
+      const newEvents = [...eventsWithNewIndices, event];
+      console.log('Events updated', newEvents);
+      return newEvents;
+    });
+  };
+
+  const handleEventChange = async (event: PlayscriptEvent) => {
+    if (event.type === 'narrator') {
+      const updatedEvent = await updateNarratorEvent({ id: event.id, line: event.line });
+
+      mutateEvents((oldEvents) => {
+        if (!oldEvents) {
+          return;
         }
-      })
-    );
+
+        const newEvents = oldEvents.map((oldEvent) => (oldEvent.id === updatedEvent.id ? updatedEvent : oldEvent));
+        return newEvents;
+      });
+    } else if (event.type === 'character') {
+      const updatedEvent = await updateCharacterEvent({
+        id: event.id,
+        lines: event.lines.map((l) => ({ charactedId: l.characterId, line: l.line })),
+      });
+
+      mutateEvents((oldEvents) => {
+        if (!oldEvents) {
+          return;
+        }
+
+        const newEvents = oldEvents.map((oldEvent) => (oldEvent.id === updatedEvent.id ? updatedEvent : oldEvent));
+        return newEvents;
+      });
+    }
   };
 
   return (
@@ -123,19 +142,31 @@ export const PlayscriptEditor: Component = () => {
               ></PlayscriptEditorCharacters>
             </div>
 
-            <div class="grow overflow-auto">
-              <Index each={events()}>
-                {(event, index) => (
-                  <EventRow
-                    event={event()}
-                    characters={characters()}
-                    onChange={handleEventChange}
-                    onNewNarratorLine={() => handleNewNarratorLine(index)}
-                    onNewCharacterLine={() => handleNewCharacterLine(index)}
-                  ></EventRow>
-                )}
-              </Index>
-            </div>
+            <Show when={events()} keyed={true}>
+              {(events) => (
+                <div class="grow overflow-auto">
+                  <Index each={orderBy(events, (e) => e.index)}>
+                    {(event, index) => (
+                      <>
+                        <EventRowButtons
+                          onNewNarratorLine={() => handleNewNarratorLine(index)}
+                          onNewCharacterLine={() => handleNewCharacterLine(index)}
+                        ></EventRowButtons>
+                        <EventRow
+                          event={event()}
+                          characters={currentPlayscript.characters}
+                          onChange={handleEventChange}
+                        ></EventRow>
+                      </>
+                    )}
+                  </Index>
+                  <EventRowButtons
+                    onNewNarratorLine={() => handleNewNarratorLine(events.length + 1)}
+                    onNewCharacterLine={() => handleNewCharacterLine(events.length + 1)}
+                  ></EventRowButtons>
+                </div>
+              )}
+            </Show>
           </>
         );
       })()}

@@ -11,16 +11,44 @@ datasource db {
 }
 
 model Playscript {
-  id         String      @id @default(cuid())
-  name       String
-  characters Character[]
+  id              String                     @id @default(cuid())
+  name            String
+  characters      Character[]
+  narratorEvents  PlayscriptNarratorEvent[]
+  characterEvents PlayscriptCharacterEvent[]
 }
 
 model Character {
+  id                      String                    @id @default(cuid())
+  order                   Int
+  name                    String
+  description             String
+  playscript              Playscript                @relation(fields: [playscriptId], references: [id])
+  playscriptId            String
+  PlayscriptCharacterLine PlayscriptCharacterLine[]
+}
+
+model PlayscriptNarratorEvent {
   id           String     @id @default(cuid())
-  order        Int
-  name         String
-  description  String
+  index        Int
+  line         String
   playscript   Playscript @relation(fields: [playscriptId], references: [id])
   playscriptId String
+}
+
+model PlayscriptCharacterEvent {
+  id           String                    @id @default(cuid())
+  index        Int
+  lines        PlayscriptCharacterLine[]
+  playscript   Playscript                @relation(fields: [playscriptId], references: [id])
+  playscriptId String
+}
+
+model PlayscriptCharacterLine {
+  id                         String                   @id @default(cuid())
+  event                      PlayscriptCharacterEvent @relation(fields: [playscriptCharacterEventId], references: [id])
+  playscriptCharacterEventId String
+  character                  Character                @relation(fields: [characterId], references: [id])
+  characterId                String
+  line                       String
 }
