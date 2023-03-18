@@ -1,5 +1,6 @@
 import fastifyCors from '@fastify/cors';
 import fastify from 'fastify';
+import { WebSocketServer } from 'ws';
 import { charactersRouter } from './routes/characters';
 import { playscriptEventsRouter } from './routes/playscriptEvents';
 import { playscriptsRouter } from './routes/playscripts';
@@ -11,6 +12,16 @@ server.register(fastifyCors);
 server.register(playscriptEventsRouter, { prefix: '/playscript/events' });
 server.register(playscriptsRouter, { prefix: '/playscripts' });
 server.register(charactersRouter, { prefix: '/characters' });
+
+const ws = new WebSocketServer({ server: server.server });
+
+ws.on('connection', (socket) => {
+  console.log('New connmetcion');
+});
+
+ws.on('close', () => {
+  console.log('Connection closes');
+});
 
 const start = async () => {
   try {
