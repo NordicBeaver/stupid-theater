@@ -161,8 +161,8 @@ export const PlayscriptEditor: Component = () => {
                     )}
                   </Index>
                   <EventRowButtons
-                    onNewNarratorLine={() => handleNewNarratorLine(events.length + 1)}
-                    onNewCharacterLine={() => handleNewCharacterLine(events.length + 1)}
+                    onNewNarratorLine={() => handleNewNarratorLine(events.length)}
+                    onNewCharacterLine={() => handleNewCharacterLine(events.length)}
                   ></EventRowButtons>
                 </div>
               )}
