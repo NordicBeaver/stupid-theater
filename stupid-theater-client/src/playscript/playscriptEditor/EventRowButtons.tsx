@@ -5,7 +5,7 @@ export const EventRowButtons: Component<{
   onNewCharacterLine?: () => void;
 }> = (props) => {
   return (
-    <div class="flex flex-row gap-4">
+    <div class="flex flex-row gap-4 pl-4">
       <button class="bg-slate-900 px-4 py-1 rounded-2xl uppercase text-sm" onClick={props.onNewNarratorLine}>
         New narrator line
       </button>
