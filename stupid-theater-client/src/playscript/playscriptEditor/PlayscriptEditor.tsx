@@ -1,6 +1,7 @@
 import { useParams } from '@solidjs/router';
 import { orderBy } from 'lodash';
-import { Component, createResource, createSignal, For, Index, Show } from 'solid-js';
+import { Component, createResource, createSignal, For, Index, Show, Signal } from 'solid-js';
+import { createStore, reconcile, unwrap } from 'solid-js/store';
 import {
   createCharacterEvent,
   createNarratorEvent,
@@ -22,7 +23,26 @@ export const PlayscriptEditor: Component = () => {
   const params = useParams<{ id: string }>();
 
   const [playscript, { mutate: mutatePlayscript }] = createResource(() => findPlayscript(params.id));
-  const [events, { mutate: mutateEvents }] = createResource(() => getEvents(params.id));
+
+  // TODO: Figure out how this works
+  function createDeepSignal<T>(value: T): Signal<T> {
+    const [store, setStore] = createStore({
+      value,
+    });
+
+    return [
+      () => store.value,
+      (v: T) => {
+        const unwrapped = unwrap(store.value);
+        if (typeof v === 'function') {
+          v = v(unwrapped);
+        }
+        setStore('value', reconcile(v));
+        return store.value;
+      },
+    ] as Signal<T>;
+  }
+  const [events, { mutate: mutateEvents }] = createResource(() => getEvents(params.id), { storage: createDeepSignal });
 
   const handlePlayscriptNameChange = async (newName: string) => {
     const updatedPlayscript = await updatePlayscript({ id: params.id, name: newName });
