@@ -1,4 +1,5 @@
 import { FastifyPluginCallback } from 'fastify';
+import { playRooms, createPlayRoom } from '../playRooms';
 import { prisma } from '../prisma';
 
 interface CreatePlayscriptDto {
@@ -12,6 +13,10 @@ interface UpdatePlayscriptDto {
 
 interface DeletePlayscriptDto {
   id: string;
+}
+
+interface StartPlayscriptDto {
+  playscriptId: string;
 }
 
 export const playscriptsRouter: FastifyPluginCallback = (server, opts, done) => {
@@ -59,6 +64,25 @@ export const playscriptsRouter: FastifyPluginCallback = (server, opts, done) => 
     const id = dto.id;
     const playscript = await prisma.playscript.delete({ where: { id: id } });
     return { playscript: playscript };
+  });
+
+  server.post('/start', async (request, response) => {
+    const dto = request.body as StartPlayscriptDto;
+    const playRoom = createPlayRoom(dto.playscriptId);
+    return { playRoomId: playRoom.id };
+  });
+
+  server.get('/room/:id', async (request, response) => {
+    const params = request.params as { id: string };
+    const playRoom = playRooms.find((room) => room.id === params.id);
+    if (!playRoom) {
+      return response.code(404).send();
+    }
+    const playscript = await prisma.playscript.findFirst({ where: { id: playRoom.playscriptId } });
+    if (!playscript) {
+      return response.code(404).send();
+    }
+    return { playRoomId: playRoom.id, playscript: playscript };
   });
 
   done();

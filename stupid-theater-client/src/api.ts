@@ -247,3 +247,16 @@ interface DeleteCharacterEventRequest {
 export async function deleteCharacterEvent(data: DeleteCharacterEventRequest) {
   await client.post<DeleteCharacterEventRequest>('/playscript/events/deleteCharacterEvent', data);
 }
+
+interface StartPlayRequest {
+  playscriptId: string;
+}
+
+interface StartPlayResponse {
+  playRoomId: string;
+}
+
+export async function startPlay(data: StartPlayRequest) {
+  const response = await client.post<StartPlayRequest, AxiosResponse<StartPlayResponse>>('/playscripts/start', data);
+  return { playroomId: response.data.playRoomId };
+}

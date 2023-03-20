@@ -16,7 +16,7 @@ server.register(charactersRouter, { prefix: '/characters' });
 const ws = new WebSocketServer({ server: server.server });
 
 ws.on('connection', (socket) => {
-  console.log('New connmetcion');
+  console.log('New connetcion');
 });
 
 ws.on('close', () => {
