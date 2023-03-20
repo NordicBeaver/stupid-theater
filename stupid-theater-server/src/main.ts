@@ -1,9 +1,11 @@
 import fastifyCors from '@fastify/cors';
 import fastify from 'fastify';
+import { nanoid } from 'nanoid';
 import { WebSocketServer } from 'ws';
 import { charactersRouter } from './routes/characters';
 import { playscriptEventsRouter } from './routes/playscriptEvents';
 import { playscriptsRouter } from './routes/playscripts';
+import { connectedSocketClients } from './socket/sockets';
 
 const server = fastify({ logger: true });
 
@@ -16,11 +18,17 @@ server.register(charactersRouter, { prefix: '/characters' });
 const ws = new WebSocketServer({ server: server.server });
 
 ws.on('connection', (socket) => {
-  console.log('New connetcion');
-});
+  const id = nanoid();
+  connectedSocketClients.push({ id: id, socket: socket });
+  console.log(`Socket connected:, ${id}`);
 
-ws.on('close', () => {
-  console.log('Connection closes');
+  socket.on('close', () => {
+    console.log(`Socket disconnected:, ${id}`);
+  });
+
+  socket.on('message', (message) => {
+    console.log('Message from socket:', message.toString());
+  });
 });
 
 const start = async () => {
