@@ -10,7 +10,7 @@ interface PlayRoom {
 
 interface Player {
   id: string;
-  Socket: WebSocket;
+  socketId: string;
   characterId?: string;
   isNarrator: boolean;
 }

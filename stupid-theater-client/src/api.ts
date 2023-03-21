@@ -260,3 +260,15 @@ export async function startPlay(data: StartPlayRequest) {
   const response = await client.post<StartPlayRequest, AxiosResponse<StartPlayResponse>>('/playscripts/start', data);
   return { playroomId: response.data.playRoomId };
 }
+
+interface GetPlayroomsResponse {
+  playroom: {
+    id: string;
+    playscriptId: string;
+  };
+}
+
+export async function getPlayroom(playroomId: string) {
+  const response = await client.get<GetPlayroomsResponse>(`/playrooms/${playroomId}`);
+  return response.data.playroom;
+}
