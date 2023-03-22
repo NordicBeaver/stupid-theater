@@ -39,6 +39,9 @@ ws.on('connection', (socket) => {
         return;
       }
       room.players.push({ id: nanoid(), socketId: clientId, isNarrator: false });
+
+      const setLineIndexMessage: SetLineIndexMessage = { type: 'SetLineIndexMessage', lineIndex: room.lineIndex };
+      socket.send(JSON.stringify(setLineIndexMessage));
     }
 
     if (message.type === 'AdvanceLineIndex') {
