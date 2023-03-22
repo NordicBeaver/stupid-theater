@@ -24,7 +24,7 @@ export const PlayRoomPage: Component = () => {
     const currentEvents = playscriptEvents();
     const currentIndex = scriptLineIndex();
     if (currentEvents != null && currentIndex != null) {
-      const currentEvent = currentEvents.find((e) => e.index === currentIndex);
+      const currentEvent = sortBy(currentEvents, (e) => e.index).find((e) => e.index === currentIndex);
       if (currentEvent) {
         return setCurrentEvent(currentEvent);
       }
