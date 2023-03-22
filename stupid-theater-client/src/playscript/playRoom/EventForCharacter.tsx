@@ -1,7 +1,8 @@
 import { trim } from 'lodash';
-import { Component, createEffect, createSignal } from 'solid-js';
+import { Component, createEffect, createSignal, on } from 'solid-js';
 import { PlayscriptCharacter } from '../../api';
 import { PlayscriptEvent } from '../Playscript';
+import meow from '../../assets//cat-meow-6226.mp3';
 
 export const EventForCharacter: Component<{
   event: PlayscriptEvent;
@@ -13,6 +14,9 @@ export const EventForCharacter: Component<{
     const newCharacter = props.characters.find((c) => c.id === props.characterId)!;
     setCharacter(newCharacter);
   });
+
+  var meowAudio = new Audio(meow);
+  meowAudio.volume = 0.4;
 
   const [line, setLine] = createSignal<string | null>(null);
   createEffect(() => {
@@ -26,6 +30,13 @@ export const EventForCharacter: Component<{
     }
 
     return setLine(newLine.line);
+  });
+
+  createEffect(() => {
+    if (line()) {
+      window.navigator.vibrate([500]);
+      meowAudio.play();
+    }
   });
 
   return (
