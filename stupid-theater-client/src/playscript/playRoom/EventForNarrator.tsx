@@ -1,3 +1,4 @@
+import { trim } from 'lodash';
 import { Component } from 'solid-js';
 import { PlayscriptCharacter } from '../../api';
 import { Button } from '../../ui/Button';
@@ -9,18 +10,21 @@ export const EventForNarrator: Component<{
   onNextLine?: () => void;
 }> = (props) => {
   return (
-    <div>
-      <h1>Narrator</h1>
-      <div>
+    <div class="w-full flex flex-col gap-12 items-center">
+      <h2 class="text-xl">Narrator</h2>
+      <div class="flex flex-col gap-4">
         {(() => {
           if (props.event.type === 'narrator') {
             return props.event.line;
           } else {
-            return props.event.lines.map((line) => (
-              <div>
-                {props.characters.find((c) => c.id === line.characterId)!.name}: {line.line}
-              </div>
-            ));
+            return props.event.lines
+              .filter((line) => trim(line.line).length > 0)
+              .map((line) => (
+                <div>
+                  <p class="font-bold">{props.characters.find((c) => c.id === line.characterId)!.name}</p>
+                  <p>{line.line}</p>
+                </div>
+              ));
           }
         })()}
       </div>

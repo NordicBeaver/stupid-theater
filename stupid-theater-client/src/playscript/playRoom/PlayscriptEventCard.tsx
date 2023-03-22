@@ -11,7 +11,7 @@ export const PlayscriptEventCard: Component<{
   onNextLine?: () => void;
 }> = (props) => {
   return (
-    <div>
+    <div class="w-80">
       {props.characterId === 'narrator' ? (
         <EventForNarrator
           event={props.event}

@@ -58,23 +58,28 @@ export const PlayRoomPage: Component = () => {
 
   return (
     <Page>
-      <div class="h-full flex items-center justify-center">
-        {characterId() != null ? (
-          playscript() != null && currentEvent() != null ? (
-            <PlayscriptEventCard
-              event={currentEvent()!}
-              characters={playscript()!.characters}
-              characterId={characterId()!}
-              onNextLine={handleNextLine}
-            ></PlayscriptEventCard>
+      <div class="h-full flex flex-col pt-8">
+        <div class="flex justify-center">
+          <h1 class="text-2xl">{playscript()?.name}</h1>
+        </div>
+        <div class="flex-grow flex items-center justify-center">
+          {characterId() != null ? (
+            playscript() != null && currentEvent() != null ? (
+              <PlayscriptEventCard
+                event={currentEvent()!}
+                characters={playscript()!.characters}
+                characterId={characterId()!}
+                onNextLine={handleNextLine}
+              ></PlayscriptEventCard>
+            ) : (
+              <div>Loading...</div>
+            )
+          ) : playscript() != null ? (
+            <CharacterSelect playscript={playscript()!} onSelect={setCharacterId}></CharacterSelect>
           ) : (
             <div>Loading...</div>
-          )
-        ) : playscript() != null ? (
-          <CharacterSelect playscript={playscript()!} onSelect={setCharacterId}></CharacterSelect>
-        ) : (
-          <div>Loading...</div>
-        )}
+          )}
+        </div>
       </div>
     </Page>
   );

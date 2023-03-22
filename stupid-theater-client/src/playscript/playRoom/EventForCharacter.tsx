@@ -29,9 +29,9 @@ export const EventForCharacter: Component<{
   });
 
   return (
-    <div>
-      <h1>{character()?.name}</h1>
-      <div>
+    <div class="w-full flex flex-col gap-12 items-center">
+      <h2 class="text-xl">{character()?.name}</h2>
+      <div class="text-lg">
         {(() => {
           if (props.event.type === 'narrator') {
             return 'Wait...';
