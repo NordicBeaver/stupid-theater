@@ -6,7 +6,7 @@ import { Button } from '../../ui/Button';
 import { Page } from '../../ui/Page';
 import { PlayscriptEvent } from '../Playscript';
 import { CharacterSelect } from './CharacterSelect';
-import { JoinRoomMessage, Message } from './messages';
+import { AdvanceLineIndexMessage, JoinRoomMessage, Message } from './messages';
 import { PlayscriptEventCard } from './PlayscriptEventCard';
 
 export const PlayRoomPage: Component = () => {
@@ -39,13 +39,22 @@ export const PlayRoomPage: Component = () => {
     socket.send(JSON.stringify(message));
   });
 
-  socket.addEventListener('message', (message) => {
-    const data = JSON.parse(message.data) as Message;
+  socket.addEventListener('message', (messageRaw) => {
+    const message = JSON.parse(messageRaw.data) as Message;
+
+    if (message.type === 'SetLineIndexMessage') {
+      setScriptLineIndex(message.lineIndex);
+    }
   });
 
   onCleanup(() => {
     socket.close();
   });
+
+  const handleNextLine = () => {
+    const message: AdvanceLineIndexMessage = { type: 'AdvanceLineIndex' };
+    socket.send(JSON.stringify(message));
+  };
 
   return (
     <Page>
@@ -56,6 +65,7 @@ export const PlayRoomPage: Component = () => {
               event={currentEvent()!}
               characters={playscript()!.characters}
               characterId={characterId()!}
+              onNextLine={handleNextLine}
             ></PlayscriptEventCard>
           ) : (
             <div>Loading...</div>

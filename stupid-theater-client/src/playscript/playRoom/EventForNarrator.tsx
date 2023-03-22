@@ -1,10 +1,12 @@
 import { Component } from 'solid-js';
 import { PlayscriptCharacter } from '../../api';
+import { Button } from '../../ui/Button';
 import { PlayscriptEvent } from '../Playscript';
 
 export const EventForNarrator: Component<{
   characters: PlayscriptCharacter[];
   event: PlayscriptEvent;
+  onNextLine?: () => void;
 }> = (props) => {
   return (
     <div>
@@ -21,6 +23,9 @@ export const EventForNarrator: Component<{
             ));
           }
         })()}
+      </div>
+      <div>
+        <Button label="Next line" onClick={props.onNextLine}></Button>
       </div>
     </div>
   );

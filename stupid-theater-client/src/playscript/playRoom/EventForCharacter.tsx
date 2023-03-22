@@ -27,6 +27,7 @@ export const EventForCharacter: Component<{
 
     return setLine(newLine.line);
   });
+
   return (
     <div>
       <h1>{character()?.name}</h1>

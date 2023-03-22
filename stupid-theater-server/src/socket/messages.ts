@@ -3,4 +3,13 @@ export type JoinRoomMessage = {
   roomId: string;
 };
 
-export type Message = JoinRoomMessage;
+export type AdvanceLineIndexMessage = {
+  type: 'AdvanceLineIndex';
+};
+
+export type SetLineIndexMessage = {
+  type: 'SetLineIndexMessage';
+  lineIndex: number;
+};
+
+export type Message = JoinRoomMessage | AdvanceLineIndexMessage | SetLineIndexMessage;

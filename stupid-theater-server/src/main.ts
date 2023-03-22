@@ -7,7 +7,7 @@ import { charactersRouter } from './routes/characters';
 import { playroomsRouter } from './routes/playrooms';
 import { playscriptEventsRouter } from './routes/playscriptEvents';
 import { playscriptsRouter } from './routes/playscripts';
-import { Message } from './socket/messages';
+import { Message, SetLineIndexMessage } from './socket/messages';
 import { connectedSocketClients } from './socket/sockets';
 
 const server = fastify({ logger: true });
@@ -39,6 +39,23 @@ ws.on('connection', (socket) => {
         return;
       }
       room.players.push({ id: nanoid(), socketId: clientId, isNarrator: false });
+    }
+
+    if (message.type === 'AdvanceLineIndex') {
+      const room = playRooms.find((r) => r.players.some((p) => p.socketId === clientId));
+      if (!room) {
+        return;
+      }
+
+      room.lineIndex += 1;
+
+      const setLineIndexMessage: SetLineIndexMessage = { type: 'SetLineIndexMessage', lineIndex: room.lineIndex };
+      room.players.forEach((player) => {
+        const socket = connectedSocketClients.find((c) => c.id === player.socketId);
+        if (socket) {
+          socket.socket.send(JSON.stringify(setLineIndexMessage));
+        }
+      });
     }
   });
 });
