@@ -34,7 +34,6 @@ export const EventForCharacter: Component<{
 
   createEffect(() => {
     if (line()) {
-      window.navigator.vibrate([500]);
       meowAudio.play();
     }
   });
