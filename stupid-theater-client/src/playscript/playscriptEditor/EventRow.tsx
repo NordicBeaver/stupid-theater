@@ -25,7 +25,7 @@ export const EventRow: Component<{
             <NarratorEventRow event={props.event} onChange={props.onChange}></NarratorEventRow>
           )}
         </div>
-        <div class="w-16 flex items-center justify-center">
+        <div class="w-16 flex items-center justify-center opacity-40">
           <Button label="DEL" onClick={props.onDelete}></Button>
         </div>
       </div>
