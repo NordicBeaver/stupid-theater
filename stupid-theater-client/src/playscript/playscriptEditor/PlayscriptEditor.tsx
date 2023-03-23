@@ -1,5 +1,5 @@
 import { useParams } from '@solidjs/router';
-import { orderBy } from 'lodash';
+import { max, orderBy } from 'lodash';
 import { Component, createResource, createSignal, For, Index, Show, Signal } from 'solid-js';
 import { createStore, reconcile, unwrap } from 'solid-js/store';
 import {
@@ -181,8 +181,8 @@ export const PlayscriptEditor: Component = () => {
                     {(event, index) => (
                       <>
                         <EventRowButtons
-                          onNewNarratorLine={() => handleNewNarratorLine(index)}
-                          onNewCharacterLine={() => handleNewCharacterLine(index)}
+                          onNewNarratorLine={() => handleNewNarratorLine(event().index)}
+                          onNewCharacterLine={() => handleNewCharacterLine(event().index)}
                         ></EventRowButtons>
                         <EventRow
                           event={event()}
@@ -194,8 +194,8 @@ export const PlayscriptEditor: Component = () => {
                     )}
                   </Index>
                   <EventRowButtons
-                    onNewNarratorLine={() => handleNewNarratorLine(events.length)}
-                    onNewCharacterLine={() => handleNewCharacterLine(events.length)}
+                    onNewNarratorLine={() => handleNewNarratorLine(max(events.map((e) => e.index + 1)) ?? 0)}
+                    onNewCharacterLine={() => handleNewCharacterLine(max(events.map((e) => e.index + 1)) ?? 0)}
                   ></EventRowButtons>
                 </div>
               )}
