@@ -22,7 +22,7 @@ export const EventForNarrator: Component<{
               .map((line) => (
                 <div>
                   <p class="font-bold">{props.characters.find((c) => c.id === line.characterId)!.name}</p>
-                  <p>{line.line}</p>
+                  <p class="whitespace-pre-line">{line.line}</p>
                 </div>
               ));
           }

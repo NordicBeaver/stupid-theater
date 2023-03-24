@@ -48,7 +48,7 @@ export const EventForCharacter: Component<{
         </h2>
         {characterDescriptionShown() ? <p>{character()?.description}</p> : null}
       </div>
-      <div class="text-lg">
+      <div class="text-lg whitespace-pre-line">
         {(() => {
           if (props.event.type === 'narrator') {
             return 'Wait...';
